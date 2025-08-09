@@ -37,6 +37,9 @@ import { Textarea } from "@/components/ui/textarea"
 const ACCENT = "from-amber-400 via-orange-500 to-rose-500"
 const EASE = [0.22, 1, 0.36, 1] as const
 
+// Anchor offset that matches your sticky navbar height (adjust if you tweak header height)
+const ANCHOR = "scroll-mt-[84px] md:scroll-mt-[96px]"
+
 // Local fallback Button (avoid external import flakiness)
 const Button: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({
   children,
@@ -817,7 +820,7 @@ export default function Home() {
       </section>
 
       {/* Work */}
-      <section id="work" className="max-w-6xl mx-auto px-4 pb-6">
+      <section id="work" className={`max-w-6xl mx-auto px-4 pb-6 ${ANCHOR}`}>
         <div className="grid md:grid-cols-3 gap-6">
           {[
             {
