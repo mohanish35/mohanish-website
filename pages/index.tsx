@@ -509,6 +509,28 @@ const booksList = [
 // ---------- Page ----------
 export default function Home() {
   const reduce = useReducedMotion()
+  const { scrollYProgress } = useScroll()
+  const hueSpring = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 28,
+    mass: 0.2,
+  })
+
+  const hue = useTransform(hueSpring, [0, 1], [0, 360])
+
+  const heroGradient = useTransform(
+    hue,
+    (h) =>
+      `linear-gradient(90deg,
+    hsl(${Math.round(h)} 95% 60%),
+    hsl(${Math.round((h + 40) % 360)} 95% 55%),
+    hsl(${Math.round((h + 80) % 360)} 90% 55%)
+  )`
+  )
+
+  const heroStyle = reduce
+    ? { "--hero": `linear-gradient(90deg, #fbbf24, #fb923c, #f43f5e)` }
+    : { "--hero": heroGradient }
 
   // UI State
   const [active, setActive] = useState<string>("work")
@@ -910,13 +932,14 @@ export default function Home() {
           className="relative"
         >
           <SparkleField />
-          <h1
-            className={`text-5xl md:text-6xl font-semibold leading-tight bg-gradient-to-br ${ACCENT} bg-clip-text text-transparent relative`}
+          <motion.h1
+            style={{ "--hero": heroGradient } as React.CSSProperties}
+            className="text-5xl md:text-6xl font-semibold leading-tight
+             bg-clip-text text-transparent [background-image:var(--hero)] relative"
           >
             Senior Software Engineer
             <span className="pointer-events-none absolute -inset-x-4 -inset-y-2 -z-10 rounded-3xl bg-white/5 blur-xl" />
-            {/* sparkles intentionally removed behind headline */}
-          </h1>
+          </motion.h1>
           <p className="mt-5 text-zinc-300 leading-relaxed max-w-xl">
             I build performant, resilient products with a JavaScript‑first
             stack. Away from the keyboard, I read widely and travel far to
@@ -948,7 +971,13 @@ export default function Home() {
             </ShimmerButton>
           </div>
         </motion.div>
-        <Tilt>
+        <Tilt
+          whileHover={{
+            y: -4,
+            boxShadow: "0 20px 60px -30px rgba(251,146,60,.35)",
+          }}
+          transition={{ type: "spring", stiffness: 300, damping: 24 }}
+        >
           <div className="relative rounded-[28px] p-2 border border-zinc-700/80 bg-zinc-900/70 backdrop-blur overflow-hidden">
             <div
               aria-hidden
