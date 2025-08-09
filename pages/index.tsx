@@ -622,6 +622,47 @@ function ExperienceCard({ exp, i }: { exp: Exp; i: number }) {
   )
 }
 
+function SkillChip({ label, i = 0 }: { label: string; i?: number }) {
+  return (
+    <motion.button
+      type="button"
+      aria-label={label}
+      className="relative inline-flex h-8 items-center rounded-full px-4 text-sm font-medium text-zinc-200/90 backdrop-blur-md
+                 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05),0_2px_4px_rgba(0,0,0,0.4)]"
+      initial={{ y: 6, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{
+        duration: 0.45,
+        ease: [0.25, 0.1, 0.25, 1],
+        delay: i * 0.03,
+      }}
+      whileHover={{
+        y: -1,
+        boxShadow:
+          "0 0 8px rgba(255, 200, 150, 0.25), inset 0 0 0 1px rgba(255,255,255,0.1)",
+      }}
+      style={{
+        background:
+          "linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))",
+        border: "1px solid rgba(255,255,255,0.08)",
+      }}
+    >
+      {label}
+
+      {/* shimmer */}
+      <motion.span
+        aria-hidden
+        className="pointer-events-none absolute -left-1/3 top-0 h-full w-1/3 rounded-full 
+                   bg-gradient-to-r from-transparent via-white/15 to-transparent"
+        initial={{ opacity: 0 }}
+        whileHover={{ x: "220%", opacity: 1 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+      />
+    </motion.button>
+  )
+}
+
 // ---------- Page ----------
 export default function Home() {
   const reduce = useReducedMotion()
@@ -727,13 +768,12 @@ export default function Home() {
   const skills = useMemo(
     () => [
       "JavaScript",
-      "React",
+      "React/Vue.js",
       "Node.js",
-      "Vue",
-      "SQL",
-      "NoSQL",
+      "SQL/NoSQL",
+      "CI/CD",
+      "VCS",
       "C++",
-      "PostgreSQL",
     ],
     []
   )
@@ -1063,17 +1103,12 @@ export default function Home() {
           </p>
           <div className="mt-7 flex gap-3 flex-wrap">
             {skills.map((skill, i) => (
-              <motion.span
+              <SkillChip
                 key={skill}
-                custom={i}
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true }}
-                className="px-3 py-1.5 rounded-full border border-zinc-600/80 bg-zinc-900/60 backdrop-blur text-zinc-100 text-sm"
-              >
-                {skill}
-              </motion.span>
+                label={skill}
+                i={i}
+                emphasis={skill === "PostgreSQL"} // optional: lightly emphasize one
+              />
             ))}
           </div>
           <div className="mt-8 flex gap-3 items-center">
