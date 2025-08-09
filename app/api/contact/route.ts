@@ -73,7 +73,7 @@ export async function POST(req: Request) {
       to,
       from,
       subject,
-      reply_to: email, // so you can just hit Reply
+      replyTo: email, // so you can just hit Reply
       html,
       headers: {
         "X-Website": "mohanish.com",
