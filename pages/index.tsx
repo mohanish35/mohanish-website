@@ -619,8 +619,9 @@ export default function Home() {
         key={id}
         href={`#${id}`}
         className={classNames(
-          "group relative px-2 md:px-3 py-3 md:py-4 text-sm md:text-base font-medium text-zinc-300 hover:text-white transition-colors",
-          isActive && "text-amber-500"
+          "group relative px-2 md:px-3 py-3 md:py-4 text-sm md:text-base font-medium text-zinc-300 transition-colors",
+          isActive && "text-amber-500",
+          !isActive && "hover:text-white"
         )}
       >
         {/* hover glow behind text */}
