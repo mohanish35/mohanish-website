@@ -1107,19 +1107,19 @@ export default function Home() {
 
             {/* Glassy bezel with neon edge (true gradient border) */}
             <motion.div
-  className="relative rounded-[28px] p-[2px]"
-  style={{
-    // two layers: subtle glass edge + flowing gradient stroke
-    background:
-      "linear-gradient(120deg,#ffffff26,#ffffff0a) padding-box, \
+              className="relative rounded-[28px] p-[2px]"
+              style={{
+                // two layers: subtle glass edge + flowing gradient stroke
+                background:
+                  "linear-gradient(120deg,#ffffff26,#ffffff0a) padding-box, \
        linear-gradient(90deg,#fbbf24,#fb923c,#f43f5e,#fb923c,#fbbf24) border-box",
-    borderRadius: 28,
-    border: "1px solid transparent",
-    backgroundSize: "300% 100%", // enables the sweep
-  }}
-  animate={{ backgroundPositionX: ["0%", "200%", "0%"] }}
-  transition={{ duration: 13, repeat: Infinity, ease: "linear" }} // 12–15s sweet spot
->
+                borderRadius: 28,
+                border: "1px solid transparent",
+                backgroundSize: "300% 100%", // enables the sweep
+              }}
+              animate={{ backgroundPositionX: ["0%", "200%", "0%"] }}
+              transition={{ duration: 13, repeat: Infinity, ease: "linear" }} // 12–15s sweet spot
+            >
               <div className="relative rounded-[26px] border border-zinc-700/70 bg-zinc-900/70 backdrop-blur-xl">
                 {/* Subtle inner vignette so the glow doesn’t wash the image */}
                 <div
