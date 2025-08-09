@@ -1113,7 +1113,7 @@ export default function Home() {
           const experiences: Exp[] = [
             {
               company: "Meltwater",
-              role: "Frontend Engineer",
+              role: "Software Engineer",
               period: "2023 — Present",
               bullets: [
                 "Spearheaded the frontend architecture for a flagship product, impacting thousands of daily users.",
