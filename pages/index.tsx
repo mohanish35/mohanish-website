@@ -637,7 +637,9 @@ export default function Home() {
           style={{ height: "1.5rem" }}
         />
         <span
-          ref={(el) => (labelRefs.current[id] = el)}
+          ref={(el) => {
+            labelRefs.current[id] = el
+          }}
           className="relative inline-block"
         >
           {label}
@@ -822,7 +824,7 @@ export default function Home() {
               ],
             },
             {
-              company: "Swvl",
+              company: "SWVL",
               role: "Software Engineer II",
               bullets: [
                 "Delivered client‑facing APIs with robust unit tests.",
@@ -862,7 +864,7 @@ export default function Home() {
                   aria-hidden
                   className={`pointer-events-none absolute inset-0 rounded-2xl [mask-image:radial-gradient(200px_140px_at_10%_10%,black,transparent)] bg-gradient-to-tr ${ACCENT} opacity-20`}
                 />
-                <CardHeader className="relative z-10">
+                <CardHeader>
                   <CardTitle className="text-zinc-100 flex items-center justify-between">
                     <span>{exp.company}</span>
                     <span
@@ -1092,7 +1094,7 @@ export default function Home() {
               aria-hidden
               className={`pointer-events-none absolute inset-px rounded-2xl bg-gradient-to-tr ${ACCENT} opacity-10`}
             />
-            <CardHeader className="relative z-10">
+            <CardHeader>
               <CardTitle>Let’s Connect</CardTitle>
             </CardHeader>
             <CardContent className="relative z-10">
