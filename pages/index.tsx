@@ -107,6 +107,26 @@ function MouseSpotlight() {
   )
 }
 
+function ParallaxItem({
+  children,
+  speed = 0.08, // 0.04–0.12 looks nice; negative flips direction
+}: {
+  children: React.ReactNode
+  speed?: number
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"], // when card enters/leaves viewport
+  })
+  const y = useTransform(scrollYProgress, [0, 1], [speed * 60, -speed * 60])
+  return (
+    <motion.div ref={ref} style={{ y }}>
+      {children}
+    </motion.div>
+  )
+}
+
 function GridGlow() {
   return (
     <div
@@ -1075,27 +1095,28 @@ export default function Home() {
         </div>
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
           {photos.slice(1).map((src, i) => (
-            <motion.figure
-              key={src}
-              custom={i}
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              className="group will-change-transform"
-              whileHover={{ y: -4 }}
-              onClick={() => setLightbox({ open: true, index: i + 1 })}
-            >
-              <div className="relative rounded-2xl border border-zinc-700 bg-zinc-900/70 backdrop-blur overflow-hidden cursor-zoom-in">
-                <img
-                  src={src}
-                  alt={`Photography ${i + 1}`}
-                  loading="lazy"
-                  className="relative z-10 aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-                />
-                <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-              </div>
-            </motion.figure>
+            <ParallaxItem key={src} speed={[0.05, 0.08, -0.06, 0.1][i % 4]}>
+              <motion.figure
+                custom={i}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                className="group will-change-transform"
+                whileHover={{ y: -4 }}
+                onClick={() => setLightbox({ open: true, index: i + 1 })}
+              >
+                <div className="relative rounded-2xl border border-zinc-700 bg-zinc-900/70 backdrop-blur overflow-hidden cursor-zoom-in">
+                  <img
+                    src={src}
+                    alt={`Photography ${i + 1}`}
+                    loading="lazy"
+                    className="relative z-10 aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
+                  <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                </div>
+              </motion.figure>
+            </ParallaxItem>
           ))}
         </div>
         {lightbox.open && (
