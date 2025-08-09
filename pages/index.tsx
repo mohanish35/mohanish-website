@@ -101,7 +101,7 @@ function MouseSpotlight() {
     <motion.div
       aria-hidden
       style={{ left: x, top: y }}
-      className="pointer-events-none fixed z-10 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/5 blur-2xl mix-blend-soft-light"
+      className="pointer-events-none fixed z-10 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/20 blur-2xl mix-blend-soft-light"
     />
   )
 }
@@ -615,26 +615,27 @@ export default function Home() {
   // --- NavLink (comet + hover glow) ---
   const NavLink = ({ id, label }: { id: string; label: string }) => {
     const isActive = active === id
-    // Width of text span + small padding for glow
     const ww = (labelSizes[id] ?? 0) + 12
+
     return (
       <a
         key={id}
         href={`#${id}`}
+        onClick={() => setActive(id)} // update immediately on click
+        aria-current={isActive ? "page" : undefined}
         className={classNames(
-          "group relative px-2 md:px-3 py-3 md:py-4 text-sm md:text-base font-medium text-zinc-300 transition-colors",
-          isActive && "text-amber-500",
-          !isActive && "hover:text-white"
+          "group relative px-2 md:px-3 py-3 md:py-4 text-sm md:text-base font-medium transition-colors",
+          isActive
+            ? "text-amber-500 hover:text-amber-500" // keep amber even on hover
+            : "text-zinc-300 hover:text-white" // only non‑active links turn white on hover
         )}
       >
-        {/* hover glow behind text */}
         <span
           aria-hidden
           className={`pointer-events-none absolute inset-x-0 top-1/2 -z-10 -translate-y-1/2 rounded-lg opacity-0 blur-md transition
-                      group-hover:opacity-60 bg-gradient-to-r ${ACCENT}`}
+                    group-hover:opacity-60 bg-gradient-to-r ${ACCENT}`}
           style={{ height: "1.5rem" }}
         />
-        {/* label (measured) */}
         <span
           ref={(el) => (labelRefs.current[id] = el)}
           className="relative inline-block"
@@ -642,21 +643,8 @@ export default function Home() {
           {label}
         </span>
 
-        {/* comet under text, inside navbar */}
-        {/* {isActive && (
-          <span
-            aria-hidden
-            className="absolute left-1/2 bottom-[6px] -translate-x-1/2"
-            style={{ width: ww > 0 ? ww : "40px" }}
-          >
-            <span
-              className={`block h-1.5 rounded-full bg-gradient-to-r ${ACCENT} shadow-[0_0_14px_4px_rgba(251,146,60,0.55)]`}
-            />
-            <span
-              className={`block h-1.5 -translate-y-1 rounded-full blur-md opacity-80 bg-gradient-to-r ${ACCENT}`}
-            />
-          </span>
-        )} */}
+        {/* comet slice (optional, unchanged) */}
+        {/* … */}
       </a>
     )
   }
@@ -686,17 +674,17 @@ export default function Home() {
       />
 
       {/* ===== NAVBAR (full width, sticky, glass sweep, slightly taller) ===== */}
+      {/* glass sweep */}
       <header className="sticky top-0 z-50">
+        <motion.div
+          aria-hidden
+          initial={{ x: "-40%" }}
+          animate={{ x: "140%" }}
+          transition={{ duration: 5.2, repeat: Infinity, ease: "linear" }}
+          className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-white/5
+          [mask-image:linear-gradient(90deg,transparent,white,transparent)]"
+        />
         <div className="relative w-full border-b border-zinc-700/60 bg-zinc-900/70 backdrop-blur-xl">
-          {/* glass sweep */}
-          <motion.div
-            aria-hidden
-            initial={{ x: "-40%" }}
-            animate={{ x: "140%" }}
-            transition={{ duration: 5.2, repeat: Infinity, ease: "linear" }}
-            className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-white/5
-                       [mask-image:linear-gradient(90deg,transparent,white,transparent)]"
-          />
           <div className="mx-auto max-w-6xl px-4">
             <div
               ref={navContainerRef}
@@ -766,6 +754,7 @@ export default function Home() {
           viewport={{ once: true }}
           className="relative"
         >
+          <SparkleField />
           <h1
             className={`text-5xl md:text-6xl font-semibold leading-tight bg-gradient-to-br ${ACCENT} bg-clip-text text-transparent relative`}
           >
