@@ -526,6 +526,102 @@ const booksList = [
   "Angels & Demons (Robert Langdon, #1)",
 ]
 
+// Fancy shine that glides across a card on hover
+function Shine() {
+  return (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute inset-0 overflow-hidden rounded-[22px]"
+    >
+      <span
+        className="absolute -inset-1 -translate-x-full rounded-[22px] bg-gradient-to-r from-white/10 via-white/40 to-white/10 opacity-0 transition will-change-transform
+        group-hover:translate-x-0 group-hover:opacity-30 duration-700 [mask-image:linear-gradient(90deg,transparent,black,transparent)]"
+      />
+    </span>
+  )
+}
+
+// Soft animated blobs behind the grid
+function GridBackdrop() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+      <motion.div
+        className="absolute -top-10 -left-16 h-64 w-64 rounded-full blur-3xl"
+        style={{
+          background:
+            "radial-gradient(closest-side,rgba(251,191,36,.35),transparent)",
+        }}
+        animate={{ x: [0, 40, 0], y: [0, 20, 0] }}
+        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute bottom-0 -right-10 h-72 w-72 rounded-full blur-3xl"
+        style={{
+          background:
+            "radial-gradient(closest-side,rgba(244,63,94,.28),transparent)",
+        }}
+        animate={{ x: [0, -30, 0], y: [0, -25, 0] }}
+        transition={{
+          duration: 18,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1.2,
+        }}
+      />
+    </div>
+  )
+}
+
+type Exp = {
+  company: string
+  role: string
+  period: string
+  bullets: string[]
+}
+
+function ExperienceCard({ exp, i }: { exp: Exp; i: number }) {
+  return (
+    <motion.article
+      className="group relative"
+      initial={{ opacity: 0, y: 24, scale: 0.98 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-10% 0px -10% 0px" }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: i * 0.05 }}
+      whileHover={{ y: -6, rotate: i % 2 ? 0.4 : -0.4 }}
+    >
+      {/* Glow ring */}
+      <div
+        className={`absolute -inset-px rounded-3xl bg-gradient-to-br ${ACCENT} opacity-30 blur-xl transition group-hover:opacity-60`}
+      />
+      {/* Card */}
+      <div className="relative h-full rounded-[22px] border border-zinc-700/70 bg-zinc-900/70 backdrop-blur p-4 md:p-6">
+        <Shine />
+        {/* Corner dot + period pill */}
+        <div className="absolute right-4 top-4 flex items-center gap-2">
+          <span
+            className={`h-2.5 w-2.5 rounded-full bg-gradient-to-r ${ACCENT} shadow-[0_0_10px_4px_rgba(251,146,60,0.35)]`}
+          />
+          <span className="rounded-full border border-zinc-700/70 bg-zinc-900/70 px-2 py-0.5 text-[11px] text-zinc-300">
+            {exp.period}
+          </span>
+        </div>
+
+        <h3 className="text-xl md:text-2xl font-semibold">{exp.company}</h3>
+        <p className="mt-1 text-sm text-zinc-400">{exp.role}</p>
+
+        <ul className="mt-4 space-y-2 text-sm text-zinc-200">
+          {exp.bullets.map((b) => (
+            <li key={b} className="relative pl-5">
+              <span className="absolute left-0 top-[.55rem] h-2 w-2 rounded-full bg-amber-300 shadow-[0_0_10px_2px_rgba(251,191,36,.8)]" />
+              {b}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </motion.article>
+  )
+}
+
 // ---------- Page ----------
 export default function Home() {
   const reduce = useReducedMotion()
@@ -1013,12 +1109,18 @@ export default function Home() {
       </section>
 
       {/* Work */}
-      <section id="work" className={`max-w-6xl mx-auto px-4 pb-6 ${ANCHOR}`}>
-        <div className="grid md:grid-cols-3 gap-6">
-          {[
+      <section
+        id="work"
+        className={`relative mx-auto max-w-6xl px-4 py-14 ${ANCHOR}`}
+      >
+        <GridBackdrop />
+        {/** data lives here for clarity; feel free to hoist it */}
+        {(() => {
+          const experiences: Exp[] = [
             {
               company: "Meltwater",
               role: "Frontend Engineer",
+              period: "2023 — Present",
               bullets: [
                 "Spearheaded the frontend architecture for a flagship product, impacting thousands of daily users.",
                 "Built a high‑performance React interface with real‑time data updates.",
@@ -1028,6 +1130,7 @@ export default function Home() {
             {
               company: "SWVL",
               role: "Software Engineer II",
+              period: "2022 — 2023",
               bullets: [
                 "Delivered client‑facing APIs with robust unit tests.",
                 "Profiled hot paths and introduced smart indexing to speed up queries.",
@@ -1037,6 +1140,7 @@ export default function Home() {
             {
               company: "Love, Bonito",
               role: "Software Engineer (promoted from Jr. FE)",
+              period: "2020 — 2022",
               bullets: [
                 "Drove localization and multi‑market rollout of the e‑commerce frontend.",
                 "Built reusable components and a lightweight design system.",
@@ -1046,46 +1150,23 @@ export default function Home() {
             {
               company: "GammaStack",
               role: "Solution Engineer",
+              period: "2019 — 2020",
               bullets: [
                 "Shipped end‑to‑end projects across the JS stack with direct client ownership.",
                 "Published the Telegram betting bot (GammaBet).",
                 "Introduced pragmatic CI/CD and code review practices.",
               ],
             },
-          ].map((exp, i) => (
-            <motion.div
-              key={exp.company}
-              custom={i}
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-            >
-              <div className="relative rounded-2xl border border-zinc-700 bg-zinc-900/70 backdrop-blur hover:border-zinc-600 transition p-2">
-                <div
-                  aria-hidden
-                  className={`pointer-events-none absolute inset-0 rounded-2xl [mask-image:radial-gradient(200px_140px_at_10%_10%,black,transparent)] bg-gradient-to-tr ${ACCENT} opacity-20`}
-                />
-                <CardHeader>
-                  <CardTitle className="text-zinc-100 flex items-center justify-between">
-                    <span>{exp.company}</span>
-                    <span
-                      className={`ml-2 h-2 w-2 rounded-full bg-gradient-to-r ${ACCENT}`}
-                    />
-                  </CardTitle>
-                  <div className="text-xs text-zinc-400">{exp.role}</div>
-                </CardHeader>
-                <CardContent className="relative z-10 text-sm text-zinc-300">
-                  <ul className="list-disc pl-5 space-y-1">
-                    {exp.bullets.map((b) => (
-                      <li key={b}>{b}</li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+          ]
+
+          return (
+            <div className="grid auto-rows-fr gap-6 sm:grid-cols-2">
+              {experiences.map((exp, i) => (
+                <ExperienceCard key={exp.company} exp={exp} i={i} />
+              ))}
+            </div>
+          )
+        })()}
       </section>
 
       {/* Photos */}
