@@ -663,6 +663,247 @@ function SkillChip({ label, i = 0 }: { label: string; i?: number }) {
   )
 }
 
+function PhotoCard({
+  src,
+  alt,
+  onOpen,
+  i,
+}: {
+  src: string
+  alt: string
+  onOpen: () => void
+  i: number
+}) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onOpen}
+      className="group relative w-full overflow-hidden rounded-2xl border border-zinc-700/70 bg-zinc-900/60 outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60"
+      initial={{ y: 10, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.45, ease: EASE, delay: i * 0.04 }}
+    >
+      {/* image */}
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        className="relative z-10 aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+        sizes="(min-width: 1024px) 32vw, (min-width: 640px) 48vw, 100vw"
+        srcSet={`${src} 1x`} /* replace with real responsive sources if you have them */
+      />
+      {/* soft film hover */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(120% 80% at 50% 30%, transparent 55%, rgba(0,0,0,.45) 100%)",
+        }}
+      />
+      {/* grain */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-[0.18] transition-opacity duration-500 mix-blend-overlay"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E\")",
+        }}
+      />
+      {/* caption on hover (optional) */}
+      <span className="pointer-events-none absolute bottom-2 left-2 z-20 rounded-md bg-black/40 px-2 py-1 text-[11px] text-zinc-200 backdrop-blur-sm opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        Click to view
+      </span>
+      {/* halo */}
+      <span
+        aria-hidden
+        className={`absolute -inset-px rounded-[18px] opacity-0 group-hover:opacity-30 transition
+                    bg-gradient-to-r ${ACCENT} blur-[6px] mix-blend-screen`}
+      />
+    </motion.button>
+  )
+}
+
+function useScrollLock(lock: boolean) {
+  useEffect(() => {
+    if (!lock) return
+    const { overflow } = document.body.style
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = overflow
+    }
+  }, [lock])
+}
+
+function preload(src: string) {
+  const img = new Image()
+  img.src = src
+}
+
+function Lightbox({
+  open,
+  index,
+  setIndex,
+  onClose,
+  list,
+}: {
+  open: boolean
+  index: number
+  setIndex: (i: number) => void
+  onClose: () => void
+  list: string[]
+}) {
+  useScrollLock(open)
+  const ref = useRef<HTMLDivElement>(null)
+
+  // preload neighbors
+  useEffect(() => {
+    if (!open) return
+    preload(list[(index + 1) % list.length])
+    preload(list[(index - 1 + list.length) % list.length])
+  }, [open, index, list])
+
+  // keyboard + focus trap
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose()
+      const last = list.length - 1 // we use indices 1..last
+      if (e.key === "ArrowRight") setIndex(index === last ? 1 : index + 1)
+      if (e.key === "ArrowLeft") setIndex(index === 1 ? last : index - 1)
+    }
+    window.addEventListener("keydown", onKey)
+    ref.current?.focus()
+    return () => window.removeEventListener("keydown", onKey)
+  }, [open, index, list.length, onClose, setIndex])
+
+  // zoom / pan
+  const [z, setZ] = useState(1)
+  const [pos, setPos] = useState({ x: 0, y: 0 })
+  const dragging = useRef(false)
+  const last = useRef({ x: 0, y: 0 })
+
+  const clamp = (v: number, m: number) => Math.max(-m, Math.min(m, v))
+
+  function onWheel(e: React.WheelEvent) {
+    e.preventDefault()
+    const next = clampZoom(z + (e.deltaY < 0 ? 0.2 : -0.2))
+    setZ(next)
+    if (next === 1) setPos({ x: 0, y: 0 })
+  }
+  const clampZoom = (v: number) => Math.min(3, Math.max(1, v))
+
+  function onPointerDown(e: React.PointerEvent) {
+    dragging.current = true
+    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+    last.current = { x: e.clientX, y: e.clientY }
+  }
+  function onPointerMove(e: React.PointerEvent) {
+    if (!dragging.current || z === 1) return
+    const dx = e.clientX - last.current.x
+    const dy = e.clientY - last.current.y
+    last.current = { x: e.clientX, y: e.clientY }
+    const limit = 240 * (z - 1)
+    setPos((p) => ({ x: clamp(p.x + dx, limit), y: clamp(p.y + dy, limit) }))
+  }
+  function onPointerUp(e: React.PointerEvent) {
+    dragging.current = false
+    ;(e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId)
+  }
+
+  if (!open) return null
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 grid place-items-center bg-black/80 backdrop-blur-sm"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Photo viewer"
+    >
+      <div
+        ref={ref}
+        tabIndex={-1}
+        // full viewport height; 2 rows: image area (flexes) + footer (auto)
+        className="relative w-[min(92vw,1200px)] h-[100svh] grid grid-rows-[1fr_auto] gap-4 px-2 py-6 outline-none"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* image area (row 1) */}
+        <div className="row-start-1 flex items-center justify-center overflow-hidden">
+          <motion.img
+            key={list[index]}
+            src={list[index]}
+            alt={`Photo ${index}`}
+            className="block max-w-full w-auto h-auto max-h-full rounded-2xl border border-white/15 shadow-2xl select-none object-contain"
+            /* … the zoom/drag handlers stay the same … */
+          />
+        </div>
+
+        {/* controls (row 2) – no fixed positioning */}
+        <div
+          className="row-start-2 flex items-center justify-between gap-3 mx-auto w-[min(92vw,1200px)]"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* thumbs */}
+          <div className="flex gap-2 overflow-x-auto rounded-xl bg-white/5 p-1 backdrop-blur-sm">
+            {list.slice(1).map((s, i) => {
+              const idx = i + 1
+              const active = idx === index
+              return (
+                <button
+                  key={s}
+                  onClick={() => setIndex(idx)}
+                  className={`h-10 w-14 shrink-0 rounded-md overflow-hidden border transition ${
+                    active
+                      ? "border-white/40"
+                      : "border-white/10 hover:border-white/25"
+                  }`}
+                  aria-label={`Go to photo ${idx}`}
+                >
+                  <img src={s} alt="" className="h-full w-full object-cover" />
+                </button>
+              )
+            })}
+          </div>
+
+          {/* actions */}
+          <div className="ml-auto flex gap-2">
+            <button
+              aria-label="Previous"
+              onClick={() =>
+                setIndex(index === 1 ? list.length - 1 : index - 1)
+              }
+              className="rounded-xl border border-white/20 bg-white/10 p-2 text-white/80 hover:text-white hover:bg-white/15"
+            >
+              ‹
+            </button>
+            <button
+              aria-label="Next"
+              onClick={() =>
+                setIndex(index === list.length - 1 ? 1 : index + 1)
+              }
+              className="rounded-xl border border-white/20 bg-white/10 p-2 text-white/80 hover:text-white hover:bg-white/15"
+            >
+              ›
+            </button>
+            <button
+              aria-label="Close"
+              onClick={onClose}
+              className="rounded-xl border border-white/20 bg-white/10 p-2 text-white/80 hover:text-white hover:bg-white/15"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
 // ---------- Page ----------
 export default function Home() {
   const reduce = useReducedMotion()
@@ -813,19 +1054,6 @@ export default function Home() {
       )
         setShowAllBooks((v) => !v)
       if (e.key === "Escape") setCmdOpen(false)
-      if (lightbox.open) {
-        if (e.key === "ArrowRight")
-          setLightbox((s) => ({
-            open: true,
-            index: ((s.index + 1) % (photos.length - 1)) + 1,
-          }))
-        if (e.key === "ArrowLeft")
-          setLightbox((s) => ({
-            open: true,
-            index: s.index === 1 ? photos.length - 1 : s.index - 1,
-          }))
-        if (e.key === "Escape") setLightbox({ open: false, index: 0 })
-      }
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
@@ -1288,54 +1516,22 @@ export default function Home() {
         </div>
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
           {photos.slice(1).map((src, i) => (
-            <ParallaxItem key={src} speed={[0.05, 0.08, -0.06, 0.1][i % 4]}>
-              <motion.figure
-                custom={i}
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true }}
-                className="group will-change-transform"
-                whileHover={{ y: -4 }}
-                onClick={() => setLightbox({ open: true, index: i + 1 })}
-              >
-                <div className="relative rounded-2xl border border-zinc-700 bg-zinc-900/70 backdrop-blur overflow-hidden cursor-zoom-in">
-                  <img
-                    src={src}
-                    alt={`Photography ${i + 1}`}
-                    loading="lazy"
-                    className="relative z-10 aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-                  />
-                  <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                </div>
-              </motion.figure>
-            </ParallaxItem>
+            <PhotoCard
+              key={src}
+              src={src}
+              alt={`Photography ${i + 1}`}
+              i={i}
+              onOpen={() => setLightbox({ open: true, index: i + 1 })}
+            />
           ))}
         </div>
-        {lightbox.open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
-            onClick={() => setLightbox({ open: false, index: 0 })}
-          >
-            <button
-              aria-label="Close"
-              className="absolute right-6 top-6 rounded-lg border border-white/20 p-2 text-white/80 hover:text-white"
-              onClick={() => setLightbox({ open: false, index: 0 })}
-            >
-              <X size={18} />
-            </button>
-            <div className="h-full w-full flex items-center justify-center p-6">
-              <img
-                src={photos[lightbox.index]}
-                alt={`Photo ${lightbox.index}`}
-                className="max-h-[80vh] max-w-[90vw] rounded-xl border border-white/20 object-contain"
-              />
-            </div>
-          </motion.div>
-        )}
+        <Lightbox
+          open={lightbox.open}
+          index={lightbox.index}
+          setIndex={(i) => setLightbox({ open: true, index: i })}
+          onClose={() => setLightbox({ open: false, index: 1 })}
+          list={photos}
+        />
       </section>
 
       {/* Books */}
