@@ -474,8 +474,8 @@ export default function Home() {
   const skills = useMemo(
     () => [
       "JavaScript",
-      "Node.js",
       "React",
+      "Node.js",
       "Vue",
       "SQL",
       "NoSQL",
@@ -683,7 +683,7 @@ export default function Home() {
           initial={{ x: "-40%" }}
           animate={{ x: "140%" }}
           transition={{ duration: 5.2, repeat: Infinity, ease: "linear" }}
-          className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-white/5
+          className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-white/15
           [mask-image:linear-gradient(90deg,transparent,white,transparent)]"
         />
         <div className="relative w-full border-b border-zinc-700/60 bg-zinc-900/70 backdrop-blur-xl">
@@ -697,7 +697,7 @@ export default function Home() {
                 <span
                   className={`text-lg md:text-xl font-semibold bg-gradient-to-r ${ACCENT} bg-clip-text text-transparent`}
                 >
-                  Mohanish Mankar
+                  Mohanish Mankar {"</>"}
                 </span>
                 {/* slightly larger & glowy dot */}
                 <span
