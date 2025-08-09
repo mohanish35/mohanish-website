@@ -32,6 +32,7 @@ import { Textarea } from "@/components/ui/textarea"
  * Site:
  * - Hero sparkles behind text removed (kept in Books).
  * - Everything else unchanged (photos lightbox, books search/toggle, contact client).
+ * + Pet-the-dot easter egg: hover/click the brand dot to "pet" it; after a streak, tiny satellites orbit for a bit.
  */
 
 const ACCENT = "from-amber-400 via-orange-500 to-rose-500"
@@ -264,6 +265,59 @@ function SparkleField() {
           style={{ left: `${s.x}%`, top: `${s.y}%` }}
         />
       ))}
+    </div>
+  )
+}
+
+// --- Pet-the-dot helpers ---
+const DOT_STREAK = 7 // pets needed to trigger the party
+const ORBIT_DURATION = 6000 // ms orbiting dots stay on
+
+function clamp(n: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, n))
+}
+
+// Pulsing glow that scales with recent pet streak
+function PurrPulse({ level }: { level: number }) {
+  const intensity = clamp(level, 0, DOT_STREAK)
+  return (
+    <motion.span
+      aria-hidden
+      animate={{
+        opacity: [0.35, 0.6, 0.35],
+        scale: [1, 1.1 + intensity * 0.02, 1],
+      }}
+      transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+      className={`absolute -inset-2 rounded-full blur-xl bg-gradient-to-r ${ACCENT} pointer-events-none`}
+    />
+  )
+}
+
+// Little satellites that orbit the main dot when party mode is on
+function OrbitingDots({ show = false }: { show: boolean }) {
+  const dots = 6
+  if (!show) return null
+  return (
+    <div className="absolute -inset-3 pointer-events-none">
+      {Array.from({ length: dots }).map((_, i) => {
+        const delay = (i / dots) * 0.6
+        const r = 16 + (i % 3) * 6 // different radii
+        return (
+          <motion.span
+            key={i}
+            aria-hidden
+            className={`absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r ${ACCENT} shadow-[0_0_10px_2px_rgba(251,146,60,0.45)]`}
+            style={{ x: r, y: 0 }}
+            animate={{ rotate: 360 }}
+            transition={{
+              duration: 2.4 + i * 0.2,
+              repeat: Infinity,
+              ease: "linear",
+              delay,
+            }}
+          />
+        )
+      })}
     </div>
   )
 }
@@ -548,6 +602,26 @@ export default function Home() {
   const isValidEmail = (val: string) => /.+@.+\..+/.test(val)
   const isValid = isValidEmail(email) && message.trim().length >= 2 && human
 
+  // --- Pet-the-dot state/logic ---
+  const [pets, setPets] = useState(0)
+  const [party, setParty] = useState(false)
+  const petDecayRef = useRef<number | null>(null)
+  function handlePet() {
+    setPets((p) => {
+      const n = p + 1
+      if (n >= DOT_STREAK && !party) {
+        setParty(true)
+        setTimeout(() => setParty(false), ORBIT_DURATION)
+      }
+      return n
+    })
+    try {
+      ;(navigator as any)?.vibrate?.(10)
+    } catch {}
+    if (petDecayRef.current) window.clearTimeout(petDecayRef.current)
+    petDecayRef.current = window.setTimeout(() => setPets(0), 1200)
+  }
+
   // contact submit
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -625,8 +699,8 @@ export default function Home() {
         className={classNames(
           "group relative px-2 md:px-3 py-3 md:py-4 text-sm md:text-base font-medium transition-colors",
           isActive
-            ? "text-amber-500 hover:text-amber-500" // keep amber even on hover
-            : "text-zinc-300 hover:text-white" // only non‑active links turn white on hover
+            ? "text-amber-500 hover:text-amber-500"
+            : "text-zinc-300 hover:text-white"
         )}
       >
         <span
@@ -691,18 +765,36 @@ export default function Home() {
               ref={navContainerRef}
               className="flex items-center justify-between"
             >
-              {/* Brand */}
-              <a href="#" className="flex items-center gap-2 py-3 md:py-4">
-                <span
-                  className={`text-lg md:text-xl font-semibold bg-gradient-to-r ${ACCENT} bg-clip-text text-transparent`}
+              {/* Brand (now pettable) */}
+              <div className="relative flex items-center gap-2 py-3 md:py-4">
+                <a href="#" className="flex items-center gap-2">
+                  <span
+                    className={`text-lg md:text-xl font-semibold bg-gradient-to-r ${ACCENT} bg-clip-text text-transparent`}
+                  >
+                    Mohanish Mankar {"</>"}
+                  </span>
+                </a>
+
+                {/* Pettable Dot */}
+                <motion.button
+                  type="button"
+                  aria-label="Pet the dot"
+                  onClick={handlePet}
+                  whileHover={{ scale: 1.25 }}
+                  whileTap={{ scale: 0.9, rotate: -12 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 18 }}
+                  className="relative grid place-items-center h-4 w-4 rounded-full"
                 >
-                  Mohanish Mankar {"</>"}
-                </span>
-                {/* slightly larger & glowy dot */}
-                <span
-                  className={`h-3 w-3 rounded-full bg-gradient-to-r ${ACCENT} shadow-[0_0_10px_5px_rgba(251,146,60,0.5)]`}
-                />
-              </a>
+                  {/* the dot itself */}
+                  <span
+                    className={`relative z-10 h-3.5 w-3.5 rounded-full bg-gradient-to-r ${ACCENT} shadow-[0_0_10px_5px_rgba(251,146,60,0.5)]`}
+                  />
+                  {/* purr pulse grows with streak */}
+                  {pets > 0 && <PurrPulse level={pets} />}
+                  {/* orbiting satellites when party is on */}
+                  <OrbitingDots show={party} />
+                </motion.button>
+              </div>
 
               {/* Center nav */}
               <nav className="hidden md:flex items-center gap-6">
