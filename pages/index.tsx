@@ -1088,17 +1088,101 @@ export default function Home() {
           </div>
         </motion.div>
         <Tilt>
-          <div className="relative rounded-[28px] p-2 border border-zinc-700/80 bg-zinc-900/70 backdrop-blur overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.985 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="group relative rounded-[28px] overflow-hidden"
+          >
+            {/* Ambient outer glow + floating shadow */}
             <div
               aria-hidden
-              className={`pointer-events-none absolute inset-px rounded-[22px] bg-gradient-to-tr ${ACCENT} opacity-10`}
+              className={`absolute -inset-[2px] rounded-[30px] opacity-30 blur-2xl bg-gradient-to-br ${ACCENT}`}
             />
-            <img
-              src={photos[0]}
-              alt="Mohanish Mankar"
-              className="relative z-10 rounded-2xl border border-zinc-700 w-full object-cover shadow-[0_20px_60px_-25px_rgba(0,0,0,0.8)]"
+            <div
+              aria-hidden
+              className="absolute -bottom-8 left-10 right-10 h-14 rounded-full bg-black/70 blur-2xl opacity-50"
             />
-          </div>
+
+            {/* Glassy bezel with neon edge (true gradient border) */}
+            <div
+              className="relative rounded-[28px] p-[2px]"
+              style={{
+                background:
+                  "linear-gradient(120deg,#ffffff26,#ffffff0a) padding-box, \
+           conic-gradient(from 180deg, #fbbf24, #fb923c, #f43f5e, #fbbf24) border-box",
+                borderRadius: 28,
+                border: "1px solid transparent",
+              }}
+            >
+              <div className="relative rounded-[26px] border border-zinc-700/70 bg-zinc-900/70 backdrop-blur-xl">
+                {/* Subtle inner vignette so the glow doesn’t wash the image */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 rounded-[26px] 
+                     bg-[radial-gradient(120%_80%_at_70%_45%,transparent_55%,rgba(0,0,0,.45)_95%)]"
+                />
+
+                {/* Animated rim light (soft conic halo that slowly rotates) */}
+                <motion.div
+                  aria-hidden
+                  className={`absolute -inset-1 rounded-[28px] mix-blend-screen opacity-35`}
+                  style={{
+                    background:
+                      "conic-gradient(from 0deg, rgba(251,191,36,.0), rgba(251,191,36,.18), rgba(244,63,94,.0))",
+                  }}
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    duration: 18,
+                    ease: "linear",
+                    repeat: Infinity,
+                  }}
+                />
+
+                {/* Gloss sweep on hover */}
+                <motion.span
+                  aria-hidden
+                  className="pointer-events-none absolute top-0 left-[-60%] h-full w-[65%]
+                     bg-gradient-to-r from-white/0 via-white/18 to-white/0
+                     [mask-image:linear-gradient(90deg,transparent,black,transparent)]
+                     mix-blend-screen"
+                  whileHover={{ x: "200%" }}
+                  transition={{ duration: 1.1, ease: "easeInOut" }}
+                />
+
+                {/* Accent blobs behind the image for depth */}
+                <motion.div
+                  aria-hidden
+                  className={`absolute -right-8 -top-8 h-40 w-40 rounded-full blur-3xl opacity-30 bg-gradient-to-br ${ACCENT}`}
+                  animate={{ x: [0, -6, 0], y: [0, 8, 0] }}
+                  transition={{
+                    duration: 10,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
+                <motion.div
+                  aria-hidden
+                  className={`absolute -left-10 -bottom-10 h-48 w-48 rounded-full blur-3xl opacity-20 bg-gradient-to-tr ${ACCENT}`}
+                  animate={{ x: [0, 10, 0], y: [0, -10, 0] }}
+                  transition={{
+                    duration: 12,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.6,
+                  }}
+                />
+
+                {/* The photo (no cropping), with crisp rounding & shadow */}
+                <img
+                  src={photos[0]}
+                  alt="Mohanish Mankar"
+                  className="relative z-10 block w-full h-full object-cover rounded-[24px]"
+                />
+              </div>
+            </div>
+          </motion.div>
         </Tilt>
       </section>
 
