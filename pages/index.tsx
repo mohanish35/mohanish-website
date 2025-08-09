@@ -578,7 +578,6 @@ export default function Home() {
       })
     } catch {
       const params = new URLSearchParams({
-        subject: "mohanish.com query",
         body: `From: ${email}%0D%0A%0D%0A${message}`,
       })
       window.location.href = `mailto:mohanish35@gmail.com?${params.toString()}`
