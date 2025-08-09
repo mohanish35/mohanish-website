@@ -136,12 +136,12 @@ function AuroraSweep() {
   const x1 = useTransform(t, [0, 1], ["-40%", "40%"])
   const y1 = useTransform(t, [0, 1], ["-25%", "25%"])
   const r1 = useTransform(t, [0, 1], [-18, 18])
-  const o1 = useTransform(t, [0, 1], [0.06, 0.14])
+  const o1 = useTransform(t, [0, 1], [0.03, 0.08])
 
   const x2 = useTransform(t, [0, 1], ["30%", "-30%"])
   const y2 = useTransform(t, [0, 1], ["-10%", "10%"])
   const r2 = useTransform(t, [0, 1], [12, -12])
-  const o2 = useTransform(t, [0, 1], [0.04, 0.1])
+  const o2 = useTransform(t, [0, 1], [0.02, 0.05])
 
   if (reduce) return null
 
