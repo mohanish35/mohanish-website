@@ -1087,13 +1087,7 @@ export default function Home() {
             </ShimmerButton>
           </div>
         </motion.div>
-        <Tilt
-          whileHover={{
-            y: -4,
-            boxShadow: "0 20px 60px -30px rgba(251,146,60,.35)",
-          }}
-          transition={{ type: "spring", stiffness: 300, damping: 24 }}
-        >
+        <Tilt>
           <div className="relative rounded-[28px] p-2 border border-zinc-700/80 bg-zinc-900/70 backdrop-blur overflow-hidden">
             <div
               aria-hidden
