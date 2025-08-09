@@ -121,6 +121,67 @@ function GridGlow() {
   )
 }
 
+function AuroraSweep() {
+  const reduce = useReducedMotion()
+  const { scrollYProgress } = useScroll()
+
+  // Smooth the scroll progress so the sweep feels silky but responsive.
+  const t = useSpring(scrollYProgress, {
+    stiffness: 140,
+    damping: 30,
+    mass: 0.15,
+  })
+
+  // Map to transforms for two layers; no multi-keyframe springs (prevents Framer error).
+  const x1 = useTransform(t, [0, 1], ["-40%", "40%"])
+  const y1 = useTransform(t, [0, 1], ["-25%", "25%"])
+  const r1 = useTransform(t, [0, 1], [-18, 18])
+  const o1 = useTransform(t, [0, 1], [0.06, 0.14])
+
+  const x2 = useTransform(t, [0, 1], ["30%", "-30%"])
+  const y2 = useTransform(t, [0, 1], ["-10%", "10%"])
+  const r2 = useTransform(t, [0, 1], [12, -12])
+  const o2 = useTransform(t, [0, 1], [0.04, 0.1])
+
+  if (reduce) return null
+
+  const maskWavy =
+    "radial-gradient(140%_80% at 50% 50%, black 35%, transparent 65%)"
+
+  return (
+    <div className="pointer-events-none fixed inset-0 overflow-hidden">
+      {/* back ribbon */}
+      <motion.div
+        aria-hidden
+        style={{
+          x: x1,
+          y: y1,
+          rotate: r1,
+          opacity: o1,
+          maskImage: maskWavy as any,
+          WebkitMaskImage: maskWavy as any,
+        }}
+        className={`absolute -inset-[20%] bg-gradient-to-r ${ACCENT} blur-3xl mix-blend-screen`}
+      />
+      {/* front ribbon */}
+      <motion.div
+        aria-hidden
+        style={{
+          x: x2,
+          y: y2,
+          rotate: r2,
+          opacity: o2,
+          maskImage:
+            "radial-gradient(120%_70% at 55% 45%, black 30%, transparent 62%)" as any,
+          WebkitMaskImage:
+            "radial-gradient(120%_70% at 55% 45%, black 30%, transparent 62%)" as any,
+        }}
+        className={`absolute -inset-[25%] bg-gradient-to-tr ${ACCENT} blur-2xl mix-blend-screen`}
+      />
+    </div>
+  )
+}
+
 function Tilt({ children }: { children: React.ReactNode }) {
   const x = useMotionValue(0)
   const y = useMotionValue(0)
@@ -732,6 +793,7 @@ export default function Home() {
       <ScrollProgress />
       <MouseSpotlight />
       <GridGlow />
+      <AuroraSweep />
 
       {/* Aurora orbs */}
       <motion.div
