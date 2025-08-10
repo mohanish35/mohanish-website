@@ -1,7 +1,7 @@
-// LatestCard.tsx (client)
 "use client"
 import { motion, useReducedMotion } from "framer-motion"
 import Link from "next/link"
+import { SHADOW_BASE, SHADOW_HOVER } from "@/lib/tokens"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 const ACCENT = "from-amber-400 via-orange-500 to-rose-500"
@@ -25,10 +25,9 @@ export function LatestCard({ p }: { p: PostMeta }) {
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: "-10% 0px -10% 0px" }}
       transition={{ duration: 0.6, ease: EASE }}
-      // same lift as career cards; skip motion for PRM users
       whileHover={reduce ? undefined : { y: -6, rotate: -0.4 }}
     >
-      {/* Glow ring (unchanged) */}
+      {/* Glow ring */}
       <div
         className={`absolute -inset-px rounded-3xl bg-gradient-to-br ${ACCENT}
                     opacity-30 blur-xl transition group-hover:opacity-60`}
@@ -37,18 +36,17 @@ export function LatestCard({ p }: { p: PostMeta }) {
       {/* Card surface */}
       <motion.div
         className="relative rounded-[22px] border border-zinc-700/70 bg-zinc-900/70 backdrop-blur p-4 md:p-6"
-        // add the subtle hover shadow to match the feel of ExperienceCard
+        style={{ boxShadow: SHADOW_BASE }}
         whileHover={
           reduce
             ? undefined
             : {
-                boxShadow:
-                  "0 18px 46px -28px rgba(0,0,0,0.55), 0 10px 30px -24px rgba(251,146,60,0.22)",
+                boxShadow: SHADOW_HOVER,
                 transition: { duration: 0.35, ease: EASE },
               }
         }
       >
-        {/* Shine sweep (slightly softer than before for readability) */}
+        {/* Shine sweep */}
         <span
           aria-hidden
           className="pointer-events-none absolute inset-0 overflow-hidden rounded-[22px]"
@@ -75,14 +73,14 @@ export function LatestCard({ p }: { p: PostMeta }) {
           </span>
         </div>
 
-        {/* Cover (reduce zoom; correct duration class) */}
+        {/* Cover */}
         {p.cover && (
           <div className="relative mb-4 overflow-hidden rounded-lg">
             <img
               src={p.cover}
               alt=""
               className="h-44 w-full object-cover transform-gpu transition-transform duration-700 ease-out
-                         group-hover:scale-[1.005]" /* teeny zoom keeps it classy */
+                         group-hover:scale-[1.005]"
             />
             <span
               aria-hidden
@@ -106,7 +104,7 @@ export function LatestCard({ p }: { p: PostMeta }) {
           </p>
         )}
 
-        {/* CTA chip (same stroke/glass language) */}
+        {/* CTA chip */}
         <div className="mt-4">
           <Link
             href={`/blog/${p.slug}`}
