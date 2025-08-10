@@ -13,13 +13,14 @@ export default async function LatestPosts() {
   return (
     <section id="blog" className="relative mx-auto max-w-6xl px-4 py-16">
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl md:text-3xl font-semibold text-white">Latest posts</h2>
-
+        <h2 className="text-2xl md:text-3xl font-semibold text-white">
+          Latest posts
+        </h2>
         <Link
           href="/blog"
           className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm
-                     border border-white/10 bg-black/30 backdrop-blur
-                     text-zinc-200 hover:text-white transition-colors"
+             border border-zinc-700/70 bg-zinc-900/70 backdrop-blur
+             text-zinc-200 hover:text-white transition-colors"
         >
           <span className="h-1.5 w-1.5 rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500" />
           All posts →

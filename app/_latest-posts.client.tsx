@@ -1,5 +1,6 @@
+// LatestCard.tsx (client)
 "use client"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import Link from "next/link"
 
 const EASE = [0.22, 1, 0.36, 1] as const
@@ -15,6 +16,8 @@ export type PostMeta = {
 }
 
 export function LatestCard({ p }: { p: PostMeta }) {
+  const reduce = useReducedMotion()
+
   return (
     <motion.article
       className="group relative will-change-transform"
@@ -22,30 +25,44 @@ export function LatestCard({ p }: { p: PostMeta }) {
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: "-10% 0px -10% 0px" }}
       transition={{ duration: 0.6, ease: EASE }}
-      whileHover={{ y: -6, rotate: -0.4 }} // ← matches career cards
+      // same lift as career cards; skip motion for PRM users
+      whileHover={reduce ? undefined : { y: -6, rotate: -0.4 }}
     >
-      {/* Glow ring — identical recipe */}
+      {/* Glow ring (unchanged) */}
       <div
-        className={`absolute -inset-px rounded-3xl bg-gradient-to-br ${ACCENT} opacity-30 blur-xl transition
-                    group-hover:opacity-60`}
+        className={`absolute -inset-px rounded-3xl bg-gradient-to-br ${ACCENT}
+                    opacity-30 blur-xl transition group-hover:opacity-60`}
       />
 
-      {/* Card body — identical surface */}
-      <div className="relative rounded-[22px] border border-zinc-700/70 bg-zinc-900/70 backdrop-blur p-4 md:p-6">
-        {/* Shine sweep — same component feel */}
+      {/* Card surface */}
+      <motion.div
+        className="relative rounded-[22px] border border-zinc-700/70 bg-zinc-900/70 backdrop-blur p-4 md:p-6"
+        // add the subtle hover shadow to match the feel of ExperienceCard
+        whileHover={
+          reduce
+            ? undefined
+            : {
+                boxShadow:
+                  "0 18px 46px -28px rgba(0,0,0,0.55), 0 10px 30px -24px rgba(251,146,60,0.22)",
+                transition: { duration: 0.35, ease: EASE },
+              }
+        }
+      >
+        {/* Shine sweep (slightly softer than before for readability) */}
         <span
           aria-hidden
           className="pointer-events-none absolute inset-0 overflow-hidden rounded-[22px]"
         >
           <span
-            className="absolute -inset-1 -translate-x-full rounded-[22px] bg-gradient-to-r from-white/10 via-white/40 to-white/10
+            className="absolute -inset-1 -translate-x-full rounded-[22px]
+                       bg-gradient-to-r from-white/5 via-white/30 to-white/5
                        opacity-0 transition duration-700 will-change-transform
-                       group-hover:translate-x-0 group-hover:opacity-30
+                       group-hover:translate-x-0 group-hover:opacity-25
                        [mask-image:linear-gradient(90deg,transparent,black,transparent)]"
           />
         </span>
 
-        {/* Date pill mirrors the period pill */}
+        {/* Date pill */}
         <div className="absolute right-4 top-4 z-10 inline-flex items-center gap-2">
           <span
             className={`h-2.5 w-2.5 rounded-full bg-gradient-to-r ${ACCENT}
@@ -58,16 +75,15 @@ export function LatestCard({ p }: { p: PostMeta }) {
           </span>
         </div>
 
-        {/* Cover — gentle zoom only */}
+        {/* Cover (reduce zoom; correct duration class) */}
         {p.cover && (
           <div className="relative mb-4 overflow-hidden rounded-lg">
             <img
               src={p.cover}
               alt=""
-              className="h-44 w-full object-cover transform-gpu transition-transform duration-600 ease-out
-                         group-hover:scale-[1.01]" /* ≤1.01 keeps it classy */
+              className="h-44 w-full object-cover transform-gpu transition-transform duration-700 ease-out
+                         group-hover:scale-[1.005]" /* teeny zoom keeps it classy */
             />
-            {/* soft top-to-bottom fade so text reads on any art */}
             <span
               aria-hidden
               className="pointer-events-none absolute inset-0 rounded-lg
@@ -77,7 +93,9 @@ export function LatestCard({ p }: { p: PostMeta }) {
         )}
 
         {/* Title / Meta */}
-        <h3 className="text-xl md:text-2xl font-semibold text-white">{p.title}</h3>
+        <h3 className="text-xl md:text-2xl font-semibold text-zinc-100">
+          {p.title}
+        </h3>
         <p className="mt-1 text-sm text-zinc-400">
           {p.readingMinutes ? `${p.readingMinutes} min read` : " "}
         </p>
@@ -88,7 +106,7 @@ export function LatestCard({ p }: { p: PostMeta }) {
           </p>
         )}
 
-        {/* CTA chip — same stroke/glass vibe as elsewhere */}
+        {/* CTA chip (same stroke/glass language) */}
         <div className="mt-4">
           <Link
             href={`/blog/${p.slug}`}
@@ -105,7 +123,7 @@ export function LatestCard({ p }: { p: PostMeta }) {
             />
           </Link>
         </div>
-      </div>
+      </motion.div>
     </motion.article>
   )
 }
