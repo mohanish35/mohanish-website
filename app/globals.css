@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Chrome blur/3D stability */
+*:where(.will-change-transform) {
+  transform: translateZ(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .motion-safe-only {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* --- Blog / MDX body --- */
+.mdx-body {
+  /* same text color rhythm as the rest of the site */
+  color: rgb(228 228 231); /* zinc-200/100-ish */
+}
+.mdx-body h2,
+.mdx-body h3,
+.mdx-body h4 {
+  font-weight: 600;
+  color: rgb(244 244 245); /* zinc-50/100 */
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+.mdx-body p {
+  margin: 0.9rem 0;
+  line-height: 1.75;
+}
+.mdx-body a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(251, 191, 36, 0.6); /* amber-400/60 */
+}
+.mdx-body code {
+  background: rgba(24, 24, 27, 0.7); /* zinc-900/70 */
+  border: 1px solid rgba(63, 63, 70, 0.8); /* zinc-700/80 */
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+.mdx-body pre {
+  background: rgba(24, 24, 27, 0.7);
+  border: 1px solid rgba(63, 63, 70, 0.8);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  overflow: auto;
+}
+.mdx-body ul,
+.mdx-body ol {
+  padding-left: 1.25rem;
+  margin: 0.75rem 0;
+}
+.mdx-body blockquote {
+  border-left: 3px solid rgba(251, 146, 60, 0.45); /* orange-400/45 */
+  padding-left: 0.9rem;
+  color: rgb(161 161 170);
+}
+.mdx-body img {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(63, 63, 70, 0.8);
+}

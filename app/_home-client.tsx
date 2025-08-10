@@ -107,26 +107,6 @@ function MouseSpotlight() {
   )
 }
 
-function ParallaxItem({
-  children,
-  speed = 0.08, // 0.04–0.12 looks nice; negative flips direction
-}: {
-  children: React.ReactNode
-  speed?: number
-}) {
-  const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"], // when card enters/leaves viewport
-  })
-  const y = useTransform(scrollYProgress, [0, 1], [speed * 60, -speed * 60])
-  return (
-    <motion.div ref={ref} style={{ y }}>
-      {children}
-    </motion.div>
-  )
-}
-
 function GridGlow() {
   return (
     <div
@@ -901,6 +881,15 @@ function Lightbox({
         </div>
       </div>
     </motion.div>
+  )
+}
+
+export function FooterClient() {
+  return (
+    <footer className="border-t border-zinc-700 py-8 text-center text-zinc-400 text-sm">
+      © <span suppressHydrationWarning>{new Date().getFullYear()}</span>{" "}
+      Mohanish Mankar. Built with curiosity and a love for learning. ❤️✨
+    </footer>
   )
 }
 
@@ -1764,12 +1753,6 @@ export default function Home() {
           </div>
         </motion.div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-zinc-700 py-8 text-center text-zinc-400 text-sm">
-        © <span suppressHydrationWarning>{new Date().getFullYear()}</span>{" "}
-        Mohanish Mankar. Built with curiosity and a love for learning. ❤️✨
-      </footer>
 
       {/* Command Palette (dialog a11y) */}
       {cmdOpen && (

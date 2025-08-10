@@ -1,9 +1,0 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Chrome blur/3D stability */
-*:where(.will-change-transform){ transform: translateZ(0); }
-@media (prefers-reduced-motion: reduce){
-  .motion-safe-only{ animation: none !important; transition: none !important; transform: none !important; }
-}
