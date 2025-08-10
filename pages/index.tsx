@@ -1239,7 +1239,7 @@ export default function Home() {
                   <span
                     className={`text-lg md:text-xl font-semibold bg-gradient-to-r ${ACCENT} bg-clip-text text-transparent`}
                   >
-                    Mohanish Mankar {"</>"}
+                    {"<"}Mohanish Mankar{"/>"}
                   </span>
                 </a>
 
