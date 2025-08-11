@@ -951,6 +951,7 @@ export default function Home() {
     { id: "photos", label: "Photography" },
     { id: "books", label: "Books" },
     { id: "contact", label: "Contact" },
+    { id: "blog", label: "Blog" },
   ]
 
   // --- Nav comet sizing (measure each link text width) ---
