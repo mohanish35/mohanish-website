@@ -16,6 +16,11 @@ export type PostMeta = {
 
 export function LatestCard({ p }: { p: PostMeta }) {
   const reduce = useReducedMotion()
+
+  const dateLabel = new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+  }).format(new Date(p.date))
+
   return (
     <motion.article
       className="group relative will-change-transform"
@@ -25,12 +30,12 @@ export function LatestCard({ p }: { p: PostMeta }) {
       transition={{ duration: 0.6, ease: EASE }}
       whileHover={reduce ? undefined : { y: -6, rotate: -0.4 }}
     >
-      {/* same glow ring */}
+      {/* halo ring */}
       <div
         className={`absolute -inset-px rounded-3xl bg-gradient-to-br ${ACCENT} opacity-30 blur-xl transition group-hover:opacity-60`}
       />
 
-      {/* card surface */}
+      {/* surface */}
       <motion.div
         className="relative rounded-[22px] border border-zinc-700/70 bg-zinc-900/70 backdrop-blur p-4 md:p-6"
         style={{ boxShadow: SHADOW_BASE }}
@@ -43,20 +48,7 @@ export function LatestCard({ p }: { p: PostMeta }) {
               }
         }
       >
-        {/* identical shine sweep */}
         <Shine />
-
-        {/* date pill – matches career period pill */}
-        <div className="absolute right-4 top-4 z-10 inline-flex items-center gap-2">
-          <span
-            className={`h-2.5 w-2.5 rounded-full bg-gradient-to-r ${ACCENT} shadow-[0_0_10px_4px_rgba(251,146,60,0.35)]`}
-          />
-          <span className="rounded-full border border-zinc-700/70 bg-zinc-900/70 px-2 py-0.5 text-[11px] text-zinc-300">
-            {new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(
-              new Date(p.date)
-            )}
-          </span>
-        </div>
 
         {/* cover */}
         {p.cover && (
@@ -78,7 +70,7 @@ export function LatestCard({ p }: { p: PostMeta }) {
           {p.title}
         </h3>
         <p className="mt-1 text-sm text-zinc-400">
-          {p.readingMinutes ? `${p.readingMinutes} min read` : " "}
+          {p.readingMinutes ? `${p.readingMinutes} min read` : "\u00A0"}
         </p>
         {p.excerpt && (
           <p className="mt-2 text-sm text-zinc-200/95 line-clamp-3">
@@ -86,8 +78,8 @@ export function LatestCard({ p }: { p: PostMeta }) {
           </p>
         )}
 
-        {/* CTA chip – same glass/stroke vibe */}
-        <div className="mt-4">
+        {/* bottom row: CTA (left) + date pill (right) */}
+        <div className="mt-4 flex items-center justify-between gap-3">
           <Link
             href={`/blog/${p.slug}`}
             className="relative inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-[13px] font-medium
@@ -102,6 +94,13 @@ export function LatestCard({ p }: { p: PostMeta }) {
                                       linear-gradient(120deg,#fbbf24,#fb923c,#f43f5e)_border-box]"
             />
           </Link>
+
+          {/* date chip */}
+          <span className="inline-flex items-center gap-2">
+            <span className="rounded-full border border-zinc-700/70 bg-zinc-900/70 px-2 py-0.5 text-[11px] text-zinc-300">
+              {dateLabel}
+            </span>
+          </span>
         </div>
       </motion.div>
     </motion.article>

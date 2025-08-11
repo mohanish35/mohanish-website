@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { getAllPosts } from "@/lib/posts"
 import { LatestCard, PostMeta } from "./_latest-posts.client"
-import { AllPostsCTA } from "@/components/AllPostsCTA"
 import { CtaChip } from "@/components/CtaChip"
 
 export default async function LatestPosts() {
