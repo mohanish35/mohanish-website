@@ -1,10 +1,9 @@
+// app/(wherever)/_latest-posts.client.tsx
 "use client"
 import { motion, useReducedMotion } from "framer-motion"
 import Link from "next/link"
-import { SHADOW_BASE, SHADOW_HOVER } from "@/lib/tokens"
-
-const EASE = [0.22, 1, 0.36, 1] as const
-const ACCENT = "from-amber-400 via-orange-500 to-rose-500"
+import { Shine } from "@/components/Shine"
+import { ACCENT, SHADOW_BASE, SHADOW_HOVER, EASE } from "@/lib/tokens"
 
 export type PostMeta = {
   slug: string
@@ -17,7 +16,6 @@ export type PostMeta = {
 
 export function LatestCard({ p }: { p: PostMeta }) {
   const reduce = useReducedMotion()
-
   return (
     <motion.article
       className="group relative will-change-transform"
@@ -27,13 +25,12 @@ export function LatestCard({ p }: { p: PostMeta }) {
       transition={{ duration: 0.6, ease: EASE }}
       whileHover={reduce ? undefined : { y: -6, rotate: -0.4 }}
     >
-      {/* Glow ring */}
+      {/* same glow ring */}
       <div
-        className={`absolute -inset-px rounded-3xl bg-gradient-to-br ${ACCENT}
-                    opacity-30 blur-xl transition group-hover:opacity-60`}
+        className={`absolute -inset-px rounded-3xl bg-gradient-to-br ${ACCENT} opacity-30 blur-xl transition group-hover:opacity-60`}
       />
 
-      {/* Card surface */}
+      {/* card surface */}
       <motion.div
         className="relative rounded-[22px] border border-zinc-700/70 bg-zinc-900/70 backdrop-blur p-4 md:p-6"
         style={{ boxShadow: SHADOW_BASE }}
@@ -46,25 +43,13 @@ export function LatestCard({ p }: { p: PostMeta }) {
               }
         }
       >
-        {/* Shine sweep */}
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-0 overflow-hidden rounded-[22px]"
-        >
-          <span
-            className="absolute -inset-1 -translate-x-full rounded-[22px]
-                       bg-gradient-to-r from-white/5 via-white/30 to-white/5
-                       opacity-0 transition duration-700 will-change-transform
-                       group-hover:translate-x-0 group-hover:opacity-25
-                       [mask-image:linear-gradient(90deg,transparent,black,transparent)]"
-          />
-        </span>
+        {/* identical shine sweep */}
+        <Shine />
 
-        {/* Date pill */}
+        {/* date pill – matches career period pill */}
         <div className="absolute right-4 top-4 z-10 inline-flex items-center gap-2">
           <span
-            className={`h-2.5 w-2.5 rounded-full bg-gradient-to-r ${ACCENT}
-                        shadow-[0_0_10px_4px_rgba(251,146,60,0.35)]`}
+            className={`h-2.5 w-2.5 rounded-full bg-gradient-to-r ${ACCENT} shadow-[0_0_10px_4px_rgba(251,146,60,0.35)]`}
           />
           <span className="rounded-full border border-zinc-700/70 bg-zinc-900/70 px-2 py-0.5 text-[11px] text-zinc-300">
             {new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(
@@ -73,38 +58,35 @@ export function LatestCard({ p }: { p: PostMeta }) {
           </span>
         </div>
 
-        {/* Cover */}
+        {/* cover */}
         {p.cover && (
           <div className="relative mb-4 overflow-hidden rounded-lg">
             <img
               src={p.cover}
               alt=""
-              className="h-44 w-full object-cover transform-gpu transition-transform duration-700 ease-out
-                         group-hover:scale-[1.005]"
+              className="h-44 w-full object-cover transform-gpu transition-transform duration-700 ease-out group-hover:scale-[1.005]"
             />
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 rounded-lg
-                         bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.35)_100%)]"
+              className="pointer-events-none absolute inset-0 rounded-lg bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.35)_100%)]"
             />
           </div>
         )}
 
-        {/* Title / Meta */}
+        {/* text */}
         <h3 className="text-xl md:text-2xl font-semibold text-zinc-100">
           {p.title}
         </h3>
         <p className="mt-1 text-sm text-zinc-400">
           {p.readingMinutes ? `${p.readingMinutes} min read` : " "}
         </p>
-
         {p.excerpt && (
           <p className="mt-2 text-sm text-zinc-200/95 line-clamp-3">
             {p.excerpt}
           </p>
         )}
 
-        {/* CTA chip */}
+        {/* CTA chip – same glass/stroke vibe */}
         <div className="mt-4">
           <Link
             href={`/blog/${p.slug}`}
