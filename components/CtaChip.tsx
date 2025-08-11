@@ -1,71 +1,70 @@
-// components/CtaChip.tsx
 "use client"
 
 import Link from "next/link"
-import { type ReactNode } from "react"
+import * as React from "react"
 
 const ACCENT = "from-amber-400 via-orange-500 to-rose-500"
 
 type Props = {
-  href: string
-  label: string
-  prefix?: ReactNode // e.g. <ArrowLeft size={16} />
-  suffix?: ReactNode // e.g. "→" or an icon
+  href?: string
+  children: React.ReactNode // include the arrow in the label if you want (e.g., "All posts →" or "← Back to home")
   className?: string
+  onClick?: React.MouseEventHandler<HTMLButtonElement>
+  hideDot?: boolean // set true if you ever want to remove the tiny dot
 }
 
-export default function CtaChip({
+export function CtaChip({
   href,
-  label,
-  prefix,
-  suffix,
+  children,
   className = "",
+  onClick,
+  hideDot,
 }: Props) {
-  return (
-    <Link
-      href={href}
-      className={`group relative inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm
-                  border border-white/10 bg-black/30 backdrop-blur
-                  text-zinc-200 hover:text-white transition-colors ${className}`}
-    >
-      {/* leading dot to match All posts exactly */}
-      <span
-        className={`h-1.5 w-1.5 rounded-full bg-gradient-to-r ${ACCENT}`}
-        aria-hidden
-      />
+  const base = `group relative inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm
+     border border-white/10 bg-black/30 backdrop-blur
+     text-zinc-200 hover:text-white transition-colors focus:outline-none
+     focus-visible:ring-2 focus-visible:ring-amber-400/40 cursor-pointer`
 
-      {/* optional prefix (icon) */}
-      {prefix ? (
-        <span className="opacity-80 group-hover:opacity-100">{prefix}</span>
-      ) : null}
+  const content = (
+    <>
+      {/* tiny gradient dot (same as before) */}
+      {!hideDot && (
+        <span
+          aria-hidden
+          className={`h-1.5 w-1.5 rounded-full bg-gradient-to-r ${ACCENT} shrink-0`}
+        />
+      )}
 
-      {label}
+      <span className="relative z-10">{children}</span>
 
-      {/* optional suffix */}
-      {suffix ? (
-        <span className="opacity-90 group-hover:opacity-100">{suffix}</span>
-      ) : null}
-
-      {/* gradient border (identical) */}
+      {/* sweeping gloss — identical feel to your All posts pill */}
       <span
         aria-hidden
-        className="pointer-events-none absolute -inset-[1px] rounded-full border border-transparent
-                   [background:linear-gradient(90deg,rgba(255,255,255,0.18),rgba(255,255,255,0.06))_padding-box,
-                                linear-gradient(120deg,#fbbf24,#fb923c,#f43f5e)_border-box]"
-      />
-      {/* sweep (identical) */}
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-0 overflow-hidden rounded-full"
+        className="pointer-events-none absolute inset-0 rounded-full overflow-hidden"
       >
         <span
-          className="absolute -inset-1 -translate-x-full rounded-full
-                     bg-gradient-to-r from-white/10 via-white/40 to-white/10
-                     opacity-0 transition duration-700 will-change-transform
-                     group-hover:translate-x-0 group-hover:opacity-30
+          className="absolute -inset-1 -translate-x-full opacity-0
+                     bg-gradient-to-r from-white/0 via-white/35 to-white/0
+                     transition duration-700 will-change-transform
+                     group-hover:translate-x-0 group-hover:opacity-100
+                     group-focus-visible:translate-x-0 group-focus-visible:opacity-100
                      [mask-image:linear-gradient(90deg,transparent,black,transparent)]"
         />
       </span>
-    </Link>
+    </>
+  )
+
+  if (href) {
+    return (
+      <Link href={href} className={`${base} ${className}`}>
+        {content}
+      </Link>
+    )
+  }
+
+  return (
+    <button type="button" onClick={onClick} className={`${base} ${className}`}>
+      {content}
+    </button>
   )
 }

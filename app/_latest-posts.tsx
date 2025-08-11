@@ -2,6 +2,7 @@ import Link from "next/link"
 import { getAllPosts } from "@/lib/posts"
 import { LatestCard, PostMeta } from "./_latest-posts.client"
 import { AllPostsCTA } from "@/components/AllPostsCTA"
+import { CtaChip } from "@/components/CtaChip"
 
 export default async function LatestPosts() {
   // Ensure you slice the actual array. If your lib returns { posts: PostMeta[] },
@@ -17,7 +18,7 @@ export default async function LatestPosts() {
         <h2 className="text-2xl md:text-3xl font-semibold text-white">
           Latest posts
         </h2>
-        <AllPostsCTA />
+        <CtaChip href="/blog">All posts →</CtaChip>
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
